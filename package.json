@@ -1,0 +1,14 @@
+{
+  "name": "my-blog",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A minimal static blog — markdown in, static HTML out.",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs --serve --watch"
+  },
+  "dependencies": {
+    "marked": "^15.0.0"
+  }
+}

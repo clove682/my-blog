@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>penn 的博客</title>
+    <link>https://clove682.github.io/my-blog</link>
+    <description>关于 AI、工程，以及别的一些东西。</description>
+    <language>zh-CN</language>
+    <lastBuildDate>Sun, 18 Oct 2026 14:26:33 GMT</lastBuildDate>
+    <atom:link href="https://clove682.github.io/my-blog/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>你的提示词为什么越写越糟</title>
+      <link>https://clove682.github.io/my-blog/posts/claude-md-why-it-rots.html</link>
+      <guid isPermaLink="true">https://clove682.github.io/my-blog/posts/claude-md-why-it-rots.html</guid>
+      <pubDate>Sun, 18 Oct 2026 01:00:00 GMT</pubDate>
+      <description>代码有编译器，指令没有。写作质量的上限由反馈回路决定，不由文笔决定——所以核心动作是审计，不是写作。</description>
+    </item>
+  </channel>
+</rss>

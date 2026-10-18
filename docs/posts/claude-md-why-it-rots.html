@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>你的提示词为什么越写越糟 · penn 的博客</title>
+<meta name="description" content="代码有编译器，指令没有。写作质量的上限由反馈回路决定，不由文笔决定——所以核心动作是审计，不是写作。">
+<meta name="author" content="penn">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="你的提示词为什么越写越糟 · penn 的博客">
+<meta property="og:description" content="代码有编译器，指令没有。写作质量的上限由反馈回路决定，不由文笔决定——所以核心动作是审计，不是写作。">
+<meta property="og:site_name" content="penn 的博客">
+<link rel="canonical" href="https://clove682.github.io/my-blog/posts/claude-md-why-it-rots.html">
+<meta property="og:url" content="https://clove682.github.io/my-blog/posts/claude-md-why-it-rots.html">
+<meta property="article:published_time" content="2026-10-18">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../style.css">
+<link rel="alternate" type="application/rss+xml" title="penn 的博客" href="../feed.xml">
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到正文</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html">penn 的博客</a>
+    <nav class="nav">
+      <a href="../index.html">文章</a>
+      <a href="../feed.xml">RSS</a>
+      <a href="https://github.com/clove682/my-blog" target="_blank" rel="noopener">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="切换深色模式">☾</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+<article class="post">
+  <header class="post-header">
+    <a class="back" href="../index.html">← 全部文章</a>
+    <h1>你的提示词为什么越写越糟</h1>
+    <p class="post-meta">
+      <time datetime="2026-10-18">2026.10.18</time>
+      <span class="dot">·</span>
+      <span>约 8 分钟</span>
+      <span class="tags"><span class="tag">AI</span><span class="tag">提示词工程</span><span class="tag">CLAUDE.md</span></span>
+    </p>
+  </header>
+
+  <div class="prose">
+<blockquote>
+<p>指令与代码的反馈回路差异，以及&quot;给指令造编译器&quot;。（CLAUDE.md、skill、一切常驻指令——本文统称&quot;提示词&quot;）
+本文所有案例来自一个真实项目三个月的开发记录（约五十轮逐行审讯）。文中论点按假说对待，欢迎反驳。</p>
+</blockquote>
+<h2>一、一个让人不安的落差</h2>
+<p>同一个模型，你让它写代码，它像工作三五年的工程师；你让它写 CLAUDE.md、写 skill、写约束自己的规范——它像实习生抄范文：句子通顺、面面俱到、可以直接发表，就是不能用。</p>
+<p>认真用过 agent 的人多少撞过这堵墙，而且撞法高度一致：</p>
+<ol>
+<li><strong>越写越长。</strong>每次出问题就加一条，几个月后 CLAUDE.md 比代码注释还长，模型表现反而更不稳定。</li>
+<li><strong>写了不生效。</strong>白纸黑字的规则，模型转身就违反；反复强调，反复忘。</li>
+<li><strong>重复建设。</strong>让 AI 总结经验，它写出一篇新文档——而这件事，系统里早已有几行说清楚了。</li>
+</ol>
+<p>我最初以为这是提示词写得不够好，于是去学更多技巧。后来发现方向反了：<strong>这三个症状是同一个根因，而且根因决定了&quot;写得好一点&quot;永远治不了它们。</strong></p>
+<h2>二、根因：指令没有编译器</h2>
+<p>为什么 AI 写得好代码、写不好指令？我的假说是五个根因，收敛成一句话：<strong>代码的反馈回路是本地、即时、机械的；指令的反馈回路是全局、延迟、行为的。写作质量的上限由反馈回路决定，不由文笔决定。</strong></p>
+<p>拆开说：</p>
+<p><strong>1. 代码有编译器，指令没有。</strong>代码写错，编译器、测试、review 在几秒到几小时内机械地告诉你错了。指令写错，惩罚发生在几周后、另一个会话里，以&quot;模型行为不对&quot;的模糊形态出现。写指令的一方——无论你还是 AI——在写作时刻收不到任何失败信号。</p>
+<p><strong>2. 训练分布偏向&quot;完整&quot;。</strong>模型见过的代码语料带质量信号：编译过、测试过、被 review 过；而&quot;指令写作&quot;几乎不以监督数据存在。模型学到的是&quot;有帮助且完整&quot;——<strong>冗余的指令在训练里从未被惩罚过，因为没有任何机制惩罚它。</strong>加法惯性不是模型的性格缺陷，是训练目标的产物。</p>
+<p><strong>3. 看不见下游。</strong>一行指令的代价是稀释注意力、错误触发，这些发生在之后的会话里、上下文压缩之后，写作时刻完全不可见。</p>
+<p><strong>4. 不持有存量。</strong>AI 每次会话重新认识你的仓库，手里只有当前任务。它不知道&quot;系统已经说了什么&quot;，于是看见值得记录的经验，就并列一份新的，而不是收敛到已有的。</p>
+<p><strong>5. 不持有目标。</strong>它持有&quot;当前这条指令&quot;，不持有&quot;你为什么做这一切&quot;。所以它说一句改一句，不能举一反三。</p>
+<p>一个真实的对照。项目早期，模型在两次分析事故后写了一份 92 行的《AI 推理纪律》，从多个角度论证&quot;断言行为前必须实证&quot;。一个月后人工审讯清理，这 92 行被压成一行，并入常驻规则文件，原文删除：</p>
+<blockquote>
+<p>断言&quot;某行为会发生/会触发&quot;前，先找到决定性代码行或实跑证据——&quot;代码里有这个机制&quot;不算证据。</p>
+</blockquote>
+<p>这一个月里没有发生任何技术进步，发生的是审讯：92 行里值钱的只有一句。清理时还发现同一批内容在文档和坑表里各存了一份——并列，而非合并。92 行若不清理，将永久占据此后每一次会话的注意力；而它多出来的 91 行，在写作时刻没有任何信号提示&quot;这是浪费&quot;。</p>
+<p>三个症状至此都能推出：加法惯性 = 没有惩罚冗余的信号（根因 1、2）；不生效 = 规则的触发与执行没有回路（根因 1）；重复建设 = 看不见存量（根因 4）。</p>
+<h2>三、推论一：核心动作是审计，不是写作</h2>
+<p>如果根因成立，第一个推论是：<strong>指令工程的主要工作不是写，是审。</strong></p>
+<p>因为写的那一方收不到反馈梯度，唯一收得到梯度的位置是使用现场：哪条规则被忽略、哪行指令引发反复纠偏、哪段说明从来没人读到。所以正确的循环不是&quot;坐下来写一份好的 CLAUDE.md&quot;，而是：</p>
+<blockquote>
+<p>用 → 疼 → 定位到具体行 → 审讯这一行 → 最小重写或删除 → 观察下一轮。</p>
+</blockquote>
+<p>这个循环里人的角色只有一个比喻是准确的：<strong>人类编译器</strong>。你不是作者，你是那个给指令报错的东西——而报错必须精确到行，否则修改无从下手。</p>
+<p>审讯不是修辞。三个月里它发生了约五十轮，问题高度稳定。随手摘几条原话：</p>
+<blockquote>
+<p>&quot;留着的意义是什么？给出必须留下来的意义。&quot;</p>
+</blockquote>
+<blockquote>
+<p>&quot;为什么你要写两遍？&quot;</p>
+</blockquote>
+<blockquote>
+<p>&quot;这是规则表，不是规则说明书。&quot;</p>
+</blockquote>
+<p>也有审不动的。一份&quot;自进化台账&quot;——记录 AI 每次任务的经验教训、本意是让系统越用越聪明——被这样质询：</p>
+<blockquote>
+<p>&quot;自进化台账到底有用吗？我长期没有感觉它有用，给我一个它必须存在的意义。&quot;</p>
+</blockquote>
+<p>它没能给出答案，后来被删了。注意这个结构：<strong>删除不是因为新东西更好，而是因为旧东西没能赎回自己。</strong>每一行必须用事件赎身——答不出是哪次失败、哪次纠正让它存在的行，默认死刑。这些审讯最终收敛成九个固定问题，附录里列全。</p>
+<h2>四、推论二：给指令造编译器</h2>
+<p>第二个推论更反直觉：<strong>最好的指令往往不是写出来的，是被机制替代掉的。</strong></p>
+<p>把指令的内容分三类：</p>
+<ul>
+<li><strong>地图</strong>：让模型&quot;知道&quot;——目录结构、代码在哪、术语在哪。作用是把模型的猜测收窄，省掉现场发现。失效方式：被忽略。</li>
+<li><strong>规则</strong>：让模型&quot;照做&quot;——命名规范、流程门禁。条件触发，覆盖默认行为。失效方式：不触发，或过度触发。</li>
+<li><strong>结构</strong>：决定前两者何时、以多少剂量进入上下文，以及哪些行为在机制上不可能发生。</li>
+</ul>
+<p>前两类是&quot;内容&quot;，第三类是内容的组织方式——也是大多数讨论完全忽略的一层。而结构有一个额外的好处：<strong>它把指令的反馈回路从&quot;几周后&quot;搬到&quot;当场&quot;。</strong>三个真实落地的例子，每一个都始于一次审讯：</p>
+<p><strong>&quot;能否通过 hook 或者 ignore 或者其他规则来限定，而不是使用提示词？&quot;</strong>——这是某次审查提交规范时的原话。答案是可以：受保护分支禁推、commit 信息格式、提交白名单，全部下沉到 git hooks 与 .gitignore。规则从&quot;提示词里的愿望&quot;变成&quot;违反就报错的机器&quot;，报错信息自带格式与正例——<strong>模型在需要的那一刻收到规则，然后自愈。</strong></p>
+<p><strong>&quot;怎样保证做相应模块前肯定读到坑表？&quot;</strong>——规则写在文档里，谁保证动手前会读到？解法是目录级指令文件：只在进入对应目录工作时才被加载。做设备模型时读到设备相关的坑，改指令集时读到指令集相关的坑。<strong>按需加载，不需要的永远不占上下文。</strong></p>
+<p><strong>&quot;怎样保证在写 commit message 时才看到这块内容？而不是永远将它放到上下文中？&quot;</strong>——这个问题逼出了最精细的一个结论。最终形态是三件套：入口文件只留一行指针（常驻成本 = 1 行），规则本体懒加载，hook 兜底——写错被拒、报错即教学。可见性不再由阅读纪律保证，而由报错时机保证。当有人提议再建一个&quot;写前自动注入规则&quot;的预防装置时，它被否决了，否决理由正是这个系统自己的原则：<strong>为没有观察到的失败建预防装置，就是把台账的旧错再犯一遍。</strong>最坏情况已被封顶为一次重试，为一个没观察到的失败再加机制，就是冗余的开始。</p>
+<p>hook 是指令的编译器，点用加载是指令的懒加载，预算硬顶是指令的 Lint。这些机制没有任何高深之处——高深的是转变：<strong>从&quot;把规则写得更清楚&quot;转向&quot;让规则在错误的现场必然出现&quot;。</strong></p>
+<h2>五、九问：AI 做侦查，人做判决</h2>
+<p>把约五十轮审讯收敛，得到九个固定问题（完整表格见附录）：意义、去重、证据或死、结构替代、加载时机、剂量、受众、生命周期，以及&quot;生成器为什么写不好&quot;这个元问题。</p>
+<p>其中一部分 AI 可以代跑：去重是全仓检索，加载时机是追加载链，受众是分析谁会读这个文件。<strong>另一部分 AI 给的答案往往不痛不痒</strong>——意义、剂量、证据。原因恰恰在第二节：它们需要的正是 AI 缺的东西（目标模型、下游观察、事件记忆）。</p>
+<p>所以分工是：<strong>AI 做侦查，人做判决。</strong>让 AI 枚举可疑行、给出证据、提出机制替代方案；杀不杀、怎么改，人拍板。这也是目前唯一跑通的形态——试图让 AI 一口气生成&quot;好的 CLAUDE.md&quot;，产出的永远是结构正确、剂量失准的散文。</p>
+<h2>六、边界，和一个可以被反驳的预测</h2>
+<p>这套东西的适用条件是个乘积：<strong>任务离模型先验的距离 × 重复次数 × 团队人数 × 出错代价。</strong>四个因子都低时（常见语言、单人、一次性任务），直接用模型、什么都不配置是对的——先验已经覆盖了你。四个因子都高（自研协议、长期项目、团队共享、错误昂贵），地图、规则、结构才逐层值回票价。两种做法没有对错，只是站在曲线的不同位置。</p>
+<p>诚实声明：以上全部来自单一项目、单一团队、三个月。它是过程可复现的案例，不是结果普适的定律。</p>
+<p>既然本文把&quot;认知要能被证伪&quot;当原则，就得留下可被证伪的东西。一个预测：<strong>模型越强，地图的需求越缩</strong>（模型自己发现比读你的文档更快）；<strong>规则的需求不缩</strong>（规则写的是你的意图与约束，不是世界常识）；<strong>结构的需求反而变大</strong>（上下文更长、压缩更频繁、多代理更普及，内容的组织方式比内容本身更决定成败）。</p>
+<p>如果一年后这个预测错了，如果九问在你的系统里杀错了行，如果&quot;审计优先于写作&quot;在你的场景不成立——这些都是本文期待收到的回复。它按假说写成，也将按假说维护。</p>
+<h2>附录：九问协议 v0.1</h2>
+<p>用法：对指令文件的每一行过一遍九问。&quot;AI 可代跑&quot;列的问可以交给工具或 AI 预填证据，人只判剩余部分。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>问</th>
+<th>审什么</th>
+<th>证据来源</th>
+<th>AI 可代跑</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>意义</td>
+<td>这行服务哪个目的？删了行为怎么变？</td>
+<td>行为对照</td>
+<td>✗ 需目标模型</td>
+</tr>
+<tr>
+<td>2</td>
+<td>去重</td>
+<td>系统里是否已有他处覆盖？</td>
+<td>全仓检索</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>3</td>
+<td>证据或死</td>
+<td>它背后是哪次真实事件？</td>
+<td>事件记录 / git 历史</td>
+<td>半自动</td>
+</tr>
+<tr>
+<td>4</td>
+<td>结构替代</td>
+<td>能否用 hook / ignore / 加载机制代替这行文字？</td>
+<td>机制枚举</td>
+<td>部分</td>
+</tr>
+<tr>
+<td>5</td>
+<td>加载时机</td>
+<td>谁在何时需要它？能否只在那时进上下文？</td>
+<td>加载链追踪</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>6</td>
+<td>剂量</td>
+<td>这是规则表还是说明书？多出来的那句在教谁？</td>
+<td>下游观察</td>
+<td>✗ 需人判</td>
+</tr>
+<tr>
+<td>7</td>
+<td>受众</td>
+<td>给模型看，还是给人看？</td>
+<td>加载者分析</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>8</td>
+<td>生命周期</td>
+<td>谁维护？怎么保障它被消费？</td>
+<td>流程审查</td>
+<td>部分</td>
+</tr>
+<tr>
+<td>9</td>
+<td>根因</td>
+<td>为什么生成器写不出好的？</td>
+<td>本文第二节</td>
+<td>—（假说）</td>
+</tr>
+</tbody></table></div>
+
+  </div>
+
+  
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>© 2026 penn · 由 <a href="https://github.com/clove682/my-blog" target="_blank" rel="noopener">my-blog</a> 驱动</p>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var btn = document.querySelector('.theme-toggle');
+    var root = document.documentElement;
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    function current() {
+      return root.getAttribute('data-theme') || (mq.matches ? 'dark' : 'light');
+    }
+    function paint() {
+      btn.textContent = current() === 'dark' ? '☀' : '☾';
+    }
+    btn.addEventListener('click', function () {
+      var next = current() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+      paint();
+    });
+    paint();
+  })();
+</script>
+</body>
+</html>

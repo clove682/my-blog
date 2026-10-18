@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>页面不存在 · penn 的博客</title>
+<meta name="description" content="">
+<meta name="author" content="penn">
+<meta name="robots" content="noindex">
+<meta property="og:type" content="website">
+<meta property="og:title" content="页面不存在 · penn 的博客">
+<meta property="og:description" content="">
+<meta property="og:site_name" content="penn 的博客">
+
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<link rel="alternate" type="application/rss+xml" title="penn 的博客" href="feed.xml">
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到正文</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">penn 的博客</a>
+    <nav class="nav">
+      <a href="index.html">文章</a>
+      <a href="feed.xml">RSS</a>
+      <a href="https://github.com/clove682/my-blog" target="_blank" rel="noopener">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="切换深色模式">☾</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+<section class="hero notfound">
+  <p class="eyebrow">404</p>
+  <h1>这页不存在</h1>
+  <p class="lede">链接可能过期了，或者我压根没写过。</p>
+  <p><a class="back" href="index.html">← 回首页</a></p>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>© 2026 penn · 由 <a href="https://github.com/clove682/my-blog" target="_blank" rel="noopener">my-blog</a> 驱动</p>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var btn = document.querySelector('.theme-toggle');
+    var root = document.documentElement;
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    function current() {
+      return root.getAttribute('data-theme') || (mq.matches ? 'dark' : 'light');
+    }
+    function paint() {
+      btn.textContent = current() === 'dark' ? '☀' : '☾';
+    }
+    btn.addEventListener('click', function () {
+      var next = current() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+      paint();
+    });
+    paint();
+  })();
+</script>
+</body>
+</html>
