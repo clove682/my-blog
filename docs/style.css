@@ -395,16 +395,6 @@ a {
   letter-spacing: -0.005em;
 }
 
-.prose h2::before {
-  content: "";
-  display: block;
-  width: 26px;
-  height: 3px;
-  margin-bottom: 0.85rem;
-  border-radius: 2px;
-  background: var(--accent);
-}
-
 .prose h3 {
   margin: 2.2em 0 0.8em;
   font-size: 1.1rem;
