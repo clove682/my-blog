@@ -9,7 +9,9 @@
 ├── src/
 │   ├── layout.mjs     # HTML 模板
 │   ├── styles.css     # 样式（深色模式自适应）
+│   ├── public/        # 静态资源（头像、图片），原样复制到输出目录
 │   └── posts/         # 文章，一个 .md 一篇
+├── content/           # 稿件存档，不参与构建、不发布到站点
 ├── docs/              # 构建产物，GitHub Pages 从这里部署
 └── package.json
 ```
