@@ -19,10 +19,12 @@ const OUT = path.join(ROOT, 'docs');
 // 站点配置：改这里就够了
 // ---------------------------------------------------------------------------
 const SITE = {
-  title: 'penn 的博客',
+  title: 'Penn Ma 的博客',
+  name: 'Penn Ma',
   tagline: '关于 AI、工程，以及别的一些东西。',
-  author: 'penn',
+  author: 'Penn Ma',
   email: '1016164355@qq.com',
+  avatar: 'avatar.png',
   // GitHub Pages 项目站点的地址；换成自己的域名时改这里（RSS 用绝对链接）
   url: 'https://clove682.github.io/my-blog',
   repo: 'https://github.com/clove682/my-blog',
@@ -110,11 +112,23 @@ function write(relPath, content) {
   fs.writeFileSync(target, content, 'utf8');
 }
 
-const FAVICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-<rect width="64" height="64" rx="14" fill="#0f766e"/>
-<path d="M18 44V20h12a9 9 0 0 1 0 18h-6" fill="none" stroke="#fff" stroke-width="5"
- stroke-linecap="round" stroke-linejoin="round"/>
-</svg>`;
+/** 递归复制 src/public/ 下的静态资源（头像、图片等）到输出目录 */
+function copyPublic() {
+  const from = path.join(SRC, 'public');
+  if (!fs.existsSync(from)) return;
+  for (const entry of fs.readdirSync(from, { withFileTypes: true })) {
+    const srcFile = path.join(from, entry.name);
+    const dstFile = path.join(OUT, entry.name);
+    entry.isDirectory() ? copyDir(srcFile, dstFile) : fs.copyFileSync(srcFile, dstFile);
+  }
+}
+
+function copyDir(from, to) {
+  fs.mkdirSync(to, { recursive: true });
+  for (const entry of fs.readdirSync(from, { withFileTypes: true })) {
+    entry.isDirectory() ? copyDir(path.join(from, entry.name), path.join(to, entry.name)) : fs.copyFileSync(path.join(from, entry.name), path.join(to, entry.name));
+  }
+}
 
 // ---------------------------------------------------------------------------
 // 构建
@@ -127,7 +141,7 @@ function build() {
   fs.mkdirSync(OUT, { recursive: true });
 
   fs.copyFileSync(path.join(SRC, 'styles.css'), path.join(OUT, 'style.css'));
-  write('favicon.svg', FAVICON);
+  copyPublic();
   write('.nojekyll', '');
 
   write('index.html', shell({ SITE, prefix: '', title: SITE.title, description: SITE.tagline, content: renderIndex(posts, SITE) }));

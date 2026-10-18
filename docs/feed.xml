@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>penn 的博客</title>
+    <title>Penn Ma 的博客</title>
     <link>https://clove682.github.io/my-blog</link>
     <description>关于 AI、工程，以及别的一些东西。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Sun, 18 Oct 2026 14:26:33 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 18 Oct 2026 14:37:36 GMT</lastBuildDate>
     <atom:link href="https://clove682.github.io/my-blog/feed.xml" rel="self" type="application/rss+xml"/>
     <item>
       <title>你的提示词为什么越写越糟</title>

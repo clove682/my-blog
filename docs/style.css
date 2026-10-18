@@ -129,6 +129,9 @@ a {
 }
 
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
   color: var(--fg);
   font-size: 0.95rem;
   font-weight: 600;
@@ -137,6 +140,13 @@ a {
 
 .brand:hover {
   color: var(--accent);
+}
+
+.brand-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--border);
 }
 
 .nav {
@@ -189,6 +199,18 @@ a {
 
 .hero {
   padding: 4.5rem 0 2.2rem;
+}
+
+.hero-avatar {
+  display: block;
+  width: 76px;
+  height: 76px;
+  margin-bottom: 1.4rem;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px var(--border),
+    0 0 0 4px var(--bg),
+    0 0 0 5px var(--border);
 }
 
 .eyebrow {

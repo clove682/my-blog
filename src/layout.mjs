@@ -26,10 +26,13 @@ ${noindex ? '<meta name="robots" content="noindex">' : ''}
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:site_name" content="${esc(SITE.title)}">
+<meta property="og:image" content="${SITE.url}/${SITE.avatar}">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="${SITE.url}/${SITE.avatar}">
 ${canonical ? `<link rel="canonical" href="${canonical}">
 <meta property="og:url" content="${canonical}">` : ''}
 ${published ? `<meta property="article:published_time" content="${published}">` : ''}
-<link rel="icon" href="${prefix}favicon.svg" type="image/svg+xml">
+<link rel="icon" href="${prefix}favicon.png" type="image/png">
 <link rel="stylesheet" href="${prefix}style.css">
 <link rel="alternate" type="application/rss+xml" title="${esc(SITE.title)}" href="${prefix}feed.xml">
 <script>
@@ -46,7 +49,7 @@ ${published ? `<meta property="article:published_time" content="${published}">` 
 
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="brand" href="${prefix}index.html">${esc(SITE.title)}</a>
+    <a class="brand" href="${prefix}index.html"><img class="brand-avatar" src="${prefix}${SITE.avatar}" alt="" width="30" height="30"><span>${esc(SITE.name)}</span></a>
     <nav class="nav">
       <a href="${prefix}index.html">文章</a>
       <a href="${prefix}feed.xml">RSS</a>
@@ -113,8 +116,9 @@ ${posts
     : '<p class="empty">还没有文章。往 <code>src/posts/</code> 里丢一个 <code>.md</code> 就行了。</p>';
 
   return `<section class="hero">
+  <img class="hero-avatar" src="${SITE.avatar}" alt="${esc(SITE.name)} 的头像" width="76" height="76">
   <p class="eyebrow">BLOG</p>
-  <h1>${esc(SITE.title)}</h1>
+  <h1>${esc(SITE.name)}</h1>
   <p class="lede">${esc(SITE.tagline)}</p>
 </section>
 ${list}`;
